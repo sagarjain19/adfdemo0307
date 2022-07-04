@@ -1,45 +1,67 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
+name: my_workflow
+on: 
   push:
     branches: [ "adf_collaboration" ]
-  pull_request:
-    branches: [ "adf_collaboration" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    paths: 
+      #- code/datafactory/credential/*
+      #- code/datafactory/dataflow/*
+      - code/datafactory/dataset/*
+      - code/datafactory/factory/*
+      #- code/datafactory/integrationRuntime/*
+      - code/datafactory/linkedService/*
+      #- code/datafactory/managedVirtualNetwork/*
+      - code/datafactory/pipeline/*
+      #- code/datafactory/trigger/*
+    
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  # Variables subject to change depending on target
+  tenantId: eab91f23-3244-40aa-8e73-a1e0e1e22949
+  sourceSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
+  destinationSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
+  sourceResourceGroupName: rgdemo101
+  sourceFactoryName: adfdemo1010
+  destinationResourceGroupName: rgdemo101
+  destinationFactoryName: adfdemo1010
+  #armParameterFile: qut.parameters.json
+  # Variables to reduce repeated values (unlikely to change)
+  factoryDirectory: code/datafactory
+  artifactName: adf_armtemplate
+
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  validate_and_generate:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    env:
+      npmString: /subscriptions/$sourceSubscriptionId/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      #- uses: actions/checkout@v3
-      - name: Log in with Azure
-        uses: azure/login@v1
+      # Checkout current branch
+      - name: Checkout 
+        uses: actions/checkout@v1
+      # Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
         with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
-      - name: Azure CLI script
-        uses: azure/CLI@v1
+          node-version: '10.x'
+      # Install npm packages saved in package.json file in the build
+      - name: Install npm package
+        run: npm install
+      # Validate all ADF resources
+      - name: Validate
+        run: npm run build validate $factoryDirectory $npmString
+      # Generate ARM Template
+      - name: Generate ARM Template
+        run: npm run build export $factoryDirectory $npmString $artifactName
+      # Copy parameters files for destination data factory
+      #- name: Copy Applicable Parameter File
+      #  run: cp "$factoryDirectory/$armParameterFile" $artifactName
+      # List artifact files
+      - name: List Artifact Files
+        run: ls $artifactName
+      # Upload ARM Template to Workflow Artifacts
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
         with:
-          azcliversion: 2.0.72
-          inlineScript: |
-                az account show
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          name: $artifactName #${{ env.artifactName }}
+          path: $factoryDirectory #${{ env.artifactName }}
