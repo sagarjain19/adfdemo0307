@@ -1,18 +1,17 @@
 name: my_workflow
 on: 
   push:
-    branches: 
+    branches:
       - adf_collaboration
-    #paths: 
-      #- /
+    paths: 
       #- code/datafactory/credential/*
       #- code/datafactory/dataflow/*
-      #- code/datafactory/dataset/*
-      #- code/datafactory/factory/*
+      - code/datafactory/dataset/*
+      - code/datafactory/factory/*
       #- code/datafactory/integrationRuntime/*
-      #- code/datafactory/linkedService/*
+      - code/datafactory/linkedService/*
       #- code/datafactory/managedVirtualNetwork/*
-      #- code/datafactory/pipeline/*
+      - code/datafactory/pipeline/*
       #- code/datafactory/trigger/*
     
   workflow_dispatch:
@@ -25,7 +24,7 @@ env:
   sourceResourceGroupName: rgdemo101
   sourceFactoryName: adfdemo1010
   destinationResourceGroupName: rgdemo101
-  destinationFactoryName: adfdemo1010
+  destinationFactoryName: adedemo2020
   #armParameterFile: qut.parameters.json
   # Variables to reduce repeated values (unlikely to change)
   factoryDirectory: code/datafactory
@@ -67,3 +66,103 @@ jobs:
         with:
           name: ${{ env.artifactName }}
           path: ${{ env.artifactName }}
+  deploy:
+    needs: validate_and_generate
+    environment: QUT # !! Change depending on target environment
+    runs-on: ubuntu-latest
+    steps:
+      # Download ARM Template from Workflow Artifacts
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.artifactName }}
+          path: ${{ env.artifactName }}
+      # Initiate connection to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZ_CREDENTIALS }} 
+          enable-AzPSSession: true 
+      # Validate ARM Template
+      - name: Validate Deployment
+        uses:  azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ env.destinationSubscriptionId }}
+          resourceGroupName: ${{ env.destinationResourceGroupName }}
+          template: ${{ env.artifactName }}/ARMTemplateForFactory.json
+          parameters: ${{ env.artifactName }}/${{ env.armParameterFile }}
+          deploymentMode: Validate
+      # Execute Adf Pre-Deployment Script
+      - name: Pre-Deployment Script
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Set-Location ${{ env.artifactName }}
+            ./PrePostDeploymentScript.ps1 `
+              -armTemplate ARMTemplateForFactory.json `
+              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
+              -DataFactoryName ${{ env.destinationFactoryName }} `
+              -predeployment $true `
+              -deleteDeployment $false
+          azPSVersion: latest
+      # Deploy ARM Template
+      - name: Deployment 
+      # This method is preferred but stopped working on 6/3/2021 (with empty errors)
+      #  uses:  azure/arm-deploy@v1
+      #  with:
+      #    resourceGroupName: ${{ env.resourceGroupName }}
+      #    template: ${{ env.artifactName }}/ARMTemplateForFactory.json
+      #    parameters: ${{ env.artifactName }}/${{ env.armParameterFile }}
+      #    deploymentMode: Incremental
+      #    deploymentName: azuredatafactory_${{ env.environment }}_deployment
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            New-AzResourceGroupDeployment `
+              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
+              -TemplateFile ${{ env.artifactName }}/ARMTemplateForFactory.json `
+              -TemplateParameterFile ${{ env.artifactName }}/${{ env.armParameterFile }} `
+              -Verbose
+          azPSVersion: latest
+      # Execute Adf Post-Deployment Script
+      - name: Post-Deployment Script
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Set-Location ${{ env.artifactName }}
+            ./PrePostDeploymentScript.ps1 `
+              -armTemplate ARMTemplateForFactory.json `
+              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
+              -DataFactoryName ${{ env.destinationFactoryName }} `
+              -predeployment $false `
+              -deleteDeployment $false
+          azPSVersion: latest 
+      # Checkout current branch
+      - name: Checkout 
+        uses: actions/checkout@v1
+      # Execute Adf Pre-Deployment Script
+        # Cannot use Powershell 7 to run these tests. The workflow will fail. Have to use Azure PowerShell. 
+      #- name: Execute Tests
+      #  id: executeTests
+      #  uses: azure/powershell@v1
+      #  with:
+      #    inlineScript: |
+      #      tests/Test-DataFactory-LinkedServices.ps1 `
+      #        -tenantId ${{ env.tenantId }} `
+      #        -clientId ${{ secrets.AZ_DF_CLIENTID }} `
+      #        -clientSecret ${{ secrets.AZ_DF_CLIENTSECRET }}  `
+      #        -subscriptionId ${{ env.destinationSubscriptionId }} `
+      #        -resourceGroupName ${{ env.destinationResourceGroupName }} `
+      #        -dataFactoryName ${{ env.destinationFactoryName }}
+      #    azPSVersion: latest
+      # Upload Pester Test Results
+      #- name: Upload Artifact
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: testResults
+      #    path: postDeploymentTestResults.html
+      # Email alert for failures
+        # We need the SMTP account and settings to set this up properly
+      #- name: Email Failures
+      #  if: ${{ steps.executeTests.outputs.testResults == 'Failed' }}
+      #  run: echo 'Failures in the pester test results.'
