@@ -25,7 +25,7 @@ env:
   sourceFactoryName: adfdemo1010
   destinationResourceGroupName: rgdemo101
   destinationFactoryName: adedemo2020
-  #armParameterFile: qut.parameters.json
+  armParameterFile: ARMTemplateParametersForFactory.json
   # Variables to reduce repeated values (unlikely to change)
   factoryDirectory: code/datafactory
   artifactName: adf_armtemplate
