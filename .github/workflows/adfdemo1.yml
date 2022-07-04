@@ -1,7 +1,8 @@
 name: my_workflow
 on: 
   push:
-    branches: [ "adf_collaboration" ]
+    branches: 
+      - adf_collaboration
     paths: 
       #- code/datafactory/credential/*
       #- code/datafactory/dataflow/*
