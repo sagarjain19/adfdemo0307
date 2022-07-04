@@ -3,16 +3,16 @@ on:
   push:
     branches: 
       - adf_collaboration
-    paths: 
-      - /
+    #paths: 
+      #- /
       #- code/datafactory/credential/*
       #- code/datafactory/dataflow/*
-      - code/datafactory/dataset/*
-      - code/datafactory/factory/*
+      #- code/datafactory/dataset/*
+      #- code/datafactory/factory/*
       #- code/datafactory/integrationRuntime/*
-      - code/datafactory/linkedService/*
+      #- code/datafactory/linkedService/*
       #- code/datafactory/managedVirtualNetwork/*
-      - code/datafactory/pipeline/*
+      #- code/datafactory/pipeline/*
       #- code/datafactory/trigger/*
     
   workflow_dispatch:
