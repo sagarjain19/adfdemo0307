@@ -4,6 +4,7 @@ on:
     branches: 
       - adf_collaboration
     paths: 
+      - /
       #- code/datafactory/credential/*
       #- code/datafactory/dataflow/*
       - code/datafactory/dataset/*
@@ -64,5 +65,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: $artifactName #${{ env.artifactName }}
-          path: $factoryDirectory #${{ env.artifactName }}
+          name: ${{ env.artifactName }}
+          path: ${{ env.artifactName }}
