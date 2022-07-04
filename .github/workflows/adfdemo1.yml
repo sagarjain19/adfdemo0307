@@ -122,7 +122,7 @@ jobs:
               -ResourceGroupName ${{ env.destinationResourceGroupName }} `
               -TemplateFile ${{ env.artifactName }}/ARMTemplateForFactory.json `
               -TemplateParameterFile ${{ env.artifactName }}/${{ env.armParameterFile }} `
-              -factoryName adedemo2020
+              -factoryName adedemo2020 `
               -Verbose
           azPSVersion: latest
       # Execute Adf Post-Deployment Script
