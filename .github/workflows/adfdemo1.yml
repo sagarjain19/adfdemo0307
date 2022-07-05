@@ -48,8 +48,7 @@ jobs:
         uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: AzKeyVault1010
-          secrets: 'sourceSubscriptionId'
-          secrets: 'factoryDirectory'         
+          secrets: 'sourceSubscriptionId'    
       # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v1
