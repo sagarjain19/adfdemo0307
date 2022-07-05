@@ -47,25 +47,7 @@ jobs:
         uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: AzKeyVault1010
-          secrets: 'sourceSubscriptionId'
-      - id: getSecrets2
-        name: Get Key Vault Secrets
-        uses: Azure/get-keyvault-secrets@v1
-        with: 
-          keyvault: AzKeyVault1010
-          secrets: 'factoryDirectory' 
-      - id: getSecrets3
-        name: Get Key Vault Secrets
-        uses: Azure/get-keyvault-secrets@v1
-        with: 
-          keyvault: AzKeyVault1010
-          secrets: 'sourceResourceGroupName' 
-      - id: getSecrets4
-        name: Get Key Vault Secrets
-        uses: Azure/get-keyvault-secrets@v1
-        with: 
-          keyvault: AzKeyVault1010
-          secrets: 'sourceFactoryName'          
+          secrets: 'sourceSubscriptionId,factoryDirectory,sourceResourceGroupName,sourceFactoryName'          
       # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -78,8 +60,8 @@ jobs:
       - name: Validate
         run: npm run build validate $factoryDirectory $npmstring
         env:
-          npmstring: /subscriptions/"${{ steps.getSecrets1.outputs.sourceSubscriptionId }}"/resourceGroups/"${{ steps.getSecrets3.outputs.sourceResourceGroupName }}"/providers/Microsoft.DataFactory/factories/"${{ steps.getSecrets4.outputs.sourceFactoryName }}"
-          factoryDirectory: "${{ steps.getSecrets2.outputs.factoryDirectory }}"
+          npmstring: /subscriptions/"${{ steps.getSecrets1.outputs.sourceSubscriptionId }}"/resourceGroups/"${{ steps.getSecrets1.outputs.sourceResourceGroupName }}"/providers/Microsoft.DataFactory/factories/"${{ steps.getSecrets1.outputs.sourceFactoryName }}"
+          factoryDirectory: "${{ steps.getSecrets1.outputs.factoryDirectory }}"
           
       # Generate ARM Template
       - name: Generate ARM Template
