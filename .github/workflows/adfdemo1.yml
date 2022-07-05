@@ -134,14 +134,11 @@ jobs:
       - name: Validate Deployment
         uses:  azure/arm-deploy@v1
         with:
-          subscriptionId: $destinationSubscriptionId1
-          resourceGroupName: $destinationResourceGroupName1
+          subscriptionId: ${{ steps.getdestinationSubscriptionId.outputs.destinationSubscriptionId }}
+          resourceGroupName: ${{ steps.getdestinationResourceGroupName.outputs.destinationResourceGroupName }}
           template: ${{ env.artifactName }}/ARMTemplateForFactory.json
           parameters: ${{ env.artifactName }}/${{ env.armParameterFile }}
           deploymentMode: Validate
-        env:
-          destinationSubscriptionId1: "${{ steps.getdestinationSubscriptionId.outputs.destinationSubscriptionId }}"
-          destinationResourceGroupName1: "${{ steps.getdestinationResourceGroupName.outputs.destinationResourceGroupName }}"
       # Execute Adf Pre-Deployment Script
       - name: Pre-Deployment Script
         uses: azure/powershell@v1
