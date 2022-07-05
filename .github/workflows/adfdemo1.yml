@@ -117,15 +117,31 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
           enable-AzPSSession: true 
+     # Get Secrets from Key Vault
+      - id: getdestinationSubscriptionId
+        name: Get Key Vault Secrets
+        uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: AzKeyVault1010
+          secrets: 'destinationSubscriptionId'
+      - id: getdestinationResourceGroupName
+        name: Get Key Vault Secrets
+        uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: AzKeyVault1010
+          secrets: 'destinationResourceGroupName' 
       # Validate ARM Template
       - name: Validate Deployment
         uses:  azure/arm-deploy@v1
         with:
-          subscriptionId: ${{ env.destinationSubscriptionId }}
-          resourceGroupName: ${{ env.destinationResourceGroupName }}
+          subscriptionId: $destinationSubscriptionId1
+          resourceGroupName: $destinationResourceGroupName1
           template: ${{ env.artifactName }}/ARMTemplateForFactory.json
           parameters: ${{ env.artifactName }}/${{ env.armParameterFile }}
           deploymentMode: Validate
+        env:
+          destinationSubscriptionId1: "${{ steps.getdestinationSubscriptionId.outputs.destinationSubscriptionId }}"
+          destinationResourceGroupName1: "${{ steps.getdestinationResourceGroupName.outputs.destinationResourceGroupName }}"
       # Execute Adf Pre-Deployment Script
       - name: Pre-Deployment Script
         uses: azure/powershell@v1
