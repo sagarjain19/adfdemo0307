@@ -26,9 +26,8 @@ env:
   destinationResourceGroupName: rgdemo101
   destinationFactoryName: adedemo2020
   armParameterFile: ARMTemplateParametersForFactory.json
-  factoryDirectory: code/datafactory
+  #factoryDirectory: code/datafactory
   artifactName: adf_armtemplate
-
 
 jobs:
   validate_and_generate:
@@ -49,7 +48,8 @@ jobs:
         uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: AzKeyVault1010
-          secrets: 'sourceSubscriptionId'    
+          secrets: 'sourceSubscriptionId'
+          secrets: 'factoryDirectory'         
       # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -62,7 +62,8 @@ jobs:
       - name: Validate
         run: npm run build validate $factoryDirectory $npmstring
         env:
-          npmstring: /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName 
+          npmstring: /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
+          factoryDirectory:"${{ steps.getSecrets.outputs.factoryDirectory }}"
       # Generate ARM Template
       - name: Generate ARM Template
         run: npm run build export $factoryDirectory /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName $artifactName
