@@ -67,8 +67,8 @@ jobs:
       - name: Generate ARM Template
         run: npm run build export $factoryDirectory $npmstring
         env:
-          npmstring: /subscriptions/"${{ steps.getSecrets1.outputs.sourceSubscriptionId }}"/resourceGroups/"${{ steps.getSecrets3.outputs.sourceResourceGroupName }}"/providers/Microsoft.DataFactory/factories/"${{ steps.getSecrets4.outputs.sourceFactoryName }}" $artifactName
-          factoryDirectory: "${{ steps.getSecrets2.outputs.factoryDirectory }}"
+          npmstring: /subscriptions/"${{ steps.getSecrets1.outputs.sourceSubscriptionId }}"/resourceGroups/"${{ steps.getSecrets1.outputs.sourceResourceGroupName }}"/providers/Microsoft.DataFactory/factories/"${{ steps.getSecrets1.outputs.sourceFactoryName }}" $artifactName
+          factoryDirectory: "${{ steps.getSecrets1.outputs.factoryDirectory }}"
  
       # Copy parameters files for destination data factory
       #- name: Copy Applicable Parameter File
