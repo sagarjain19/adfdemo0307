@@ -32,7 +32,7 @@ env:
 
 jobs:
   validate_and_generate:
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       # Checkout current branch
       - name: Checkout 
