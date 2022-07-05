@@ -26,7 +26,7 @@ env:
   destinationResourceGroupName: rgdemo101
   destinationFactoryName: adedemo2020
   armParameterFile: ARMTemplateParametersForFactory.json
-  #factoryDirectory: code/datafactory
+  factoryDirectory: code/datafactory
   artifactName: adf_armtemplate
 
 jobs:
@@ -62,7 +62,6 @@ jobs:
         run: npm run build validate $factoryDirectory $npmstring
         env:
           npmstring: /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
-          factoryDirectory:"${{ steps.getSecrets.outputs.factoryDirectory }}"
       # Generate ARM Template
       - name: Generate ARM Template
         run: npm run build export $factoryDirectory /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName $artifactName
