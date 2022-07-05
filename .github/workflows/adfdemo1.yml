@@ -15,7 +15,6 @@ on:
       - code/datafactory/trigger/*
     
   workflow_dispatch:
-
 env:
   # Variables subject to change depending on target
   tenantId: eab91f23-3244-40aa-8e73-a1e0e1e22949
@@ -43,13 +42,18 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
           enable-AzPSSession: true        
      # Get Secrets from Key Vault
-      - id: getSecrets
+      - id: getSecrets1
         name: Get Key Vault Secrets
         uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: AzKeyVault1010
           secrets: 'sourceSubscriptionId'
-          secrets: 'factoryDirectory'         
+      - id: getSecrets2
+        name: Get Key Vault Secrets
+        uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: AzKeyVault1010
+          secrets: 'factoryDirectory'   
       # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -62,8 +66,8 @@ jobs:
       - name: Validate
         run: npm run build validate $factoryDirectory $npmstring
         env:
-          npmstring: /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
-          factoryDirectory:"${{ steps.getSecrets.outputs.factoryDirectory }}"
+          npmstring: /subscriptions/"${{ steps.getSecrets1.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
+          factoryDirectory: "${{ steps.getSecrets2.outputs.factoryDirectory }}"
       # Generate ARM Template
       - name: Generate ARM Template
         run: npm run build export $factoryDirectory /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName $artifactName
