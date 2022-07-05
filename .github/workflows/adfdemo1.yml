@@ -19,11 +19,11 @@ env:
   # Variables subject to change depending on target
   tenantId: eab91f23-3244-40aa-8e73-a1e0e1e22949
   #sourceSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
-  destinationSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
+  #destinationSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
   #sourceResourceGroupName: rgdemo101
   #sourceFactoryName: adfdemo1010
-  destinationResourceGroupName: rgdemo101
-  destinationFactoryName: adedemo2020
+  #destinationResourceGroupName: rgdemo101
+  #destinationFactoryName: adedemo2020
   armParameterFile: ARMTemplateParametersForFactory.json
   #factoryDirectory: code/datafactory
   artifactName: adf_armtemplate
@@ -46,7 +46,7 @@ jobs:
         name: Get Key Vault Secrets
         with: 
           keyvault: AzKeyVault1010
-          secrets: 'sourceSubscriptionId ,factoryDirectory ,sourceResourceGroupName ,sourceFactoryName'
+          secrets: 'sourceSubscriptionId ,factoryDirectory ,sourceResourceGroupName ,sourceFactoryName, artifactName'
         id: getSecrets1
       # Install Node.js
       - name: Setup Node.js
@@ -75,13 +75,13 @@ jobs:
       #  run: cp "$factoryDirectory/$armParameterFile" $artifactName
       # List artifact files
       - name: List Artifact Files
-        run: ls $artifactName
+        run: ls ${{ steps.getSecrets1.outputs.artifactName }}
       # Upload ARM Template to Workflow Artifacts
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.artifactName }}
-          path: ${{ env.artifactName }}
+          name: ${{ steps.getSecrets1.outputs.artifactName }}
+          path: ${{ steps.getSecrets1.outputs.artifactName }}
   deploy:
     needs: validate_and_generate
     environment: PRD # !! Change depending on target environment
@@ -105,7 +105,7 @@ jobs:
         uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: AzKeyVault1010
-          secrets: 'destinationSubscriptionId,destinationResourceGroupName'
+          secrets: 'destinationSubscriptionId,destinationResourceGroupName,destinationFactoryName'
       # Validate ARM Template
       - name: Validate Deployment
         uses:  azure/arm-deploy@v1
@@ -123,8 +123,8 @@ jobs:
             Set-Location ${{ env.artifactName }}
             ./PrePostDeploymentScript.ps1 `
               -armTemplate ARMTemplateForFactory.json `
-              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
-              -DataFactoryName ${{ env.destinationFactoryName }} `
+              -ResourceGroupName ${{ steps.getSecrets2.outputs.destinationResourceGroupName }} `
+              -DataFactoryName ${{ steps.getSecrets2.outputs.destinationFactoryName }} `
               -predeployment $true `
               -deleteDeployment $false
           azPSVersion: latest
@@ -134,7 +134,7 @@ jobs:
         with:
           inlineScript: |
             New-AzResourceGroupDeployment `
-              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
+              -ResourceGroupName ${{ steps.getSecrets2.outputs.destinationResourceGroupName }} `
               -TemplateFile ${{ env.artifactName }}/ARMTemplateForFactory.json `
               -TemplateParameterFile ${{ env.artifactName }}/${{ env.armParameterFile }} `
               -factoryName adedemo2020 `
@@ -148,8 +148,8 @@ jobs:
             Set-Location ${{ env.artifactName }}
             ./PrePostDeploymentScript.ps1 `
               -armTemplate ARMTemplateForFactory.json `
-              -ResourceGroupName ${{ env.destinationResourceGroupName }} `
-              -DataFactoryName ${{ env.destinationFactoryName }} `
+              -ResourceGroupName ${{ steps.getSecrets2.outputs.destinationResourceGroupName }} `
+              -DataFactoryName ${{ steps.getSecrets2.outputs.destinationFactoryName }} `
               -predeployment $false `
               -deleteDeployment $false
           azPSVersion: latest 
