@@ -19,7 +19,7 @@ on:
 env:
   # Variables subject to change depending on target
   tenantId: eab91f23-3244-40aa-8e73-a1e0e1e22949
-  sourceSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
+  #sourceSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
   destinationSubscriptionId: 24e4b4be-7875-429e-9548-fdc3241c1683
   sourceResourceGroupName: rgdemo101
   sourceFactoryName: adfdemo1010
@@ -32,13 +32,24 @@ env:
 
 jobs:
   validate_and_generate:
-    runs-on: ubuntu-latest
-    env:
-      npmString: /subscriptions/$sourceSubscriptionId/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName
+  runs-on: ubuntu-latest
     steps:
       # Checkout current branch
       - name: Checkout 
         uses: actions/checkout@v1
+       # Initiate connection to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }} 
+          enable-AzPSSession: true        
+     # Get Secrets from Key Vault
+      - id: getSecrets
+        name: Get Key Vault Secrets
+        uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: AzKeyVault1010
+          secrets: 'sourceSubscriptionId'    
       # Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -49,10 +60,12 @@ jobs:
         run: npm install
       # Validate all ADF resources
       - name: Validate
-        run: npm run build validate $factoryDirectory $npmString
+        run: npm run build validate $factoryDirectory $npmstring
+        env:
+          npmstring: /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName 
       # Generate ARM Template
       - name: Generate ARM Template
-        run: npm run build export $factoryDirectory $npmString $artifactName
+        run: npm run build export $factoryDirectory /subscriptions/"${{ steps.getSecrets.outputs.sourceSubscriptionId }}"/resourceGroups/$sourceResourceGroupName/providers/Microsoft.DataFactory/factories/$sourceFactoryName $artifactName
       # Copy parameters files for destination data factory
       #- name: Copy Applicable Parameter File
       #  run: cp "$factoryDirectory/$armParameterFile" $artifactName
