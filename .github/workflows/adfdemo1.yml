@@ -1,16 +1,14 @@
-name: my_workflow
+name: AzCiCd_Workflow
 on: 
   push:
     branches:
       - adf_collaboration
     paths: 
-      #- code/datafactory/credential/*
       - code/datafactory/dataflow/*
       - code/datafactory/dataset/*
       - code/datafactory/factory/*
       - code/datafactory/integrationRuntime/*
       - code/datafactory/linkedService/*
-      #- code/datafactory/managedVirtualNetwork/*
       - code/datafactory/pipeline/*
       - code/datafactory/trigger/*
     
@@ -71,8 +69,10 @@ jobs:
           factoryDirectory: "${{ steps.getSecrets1.outputs.factoryDirectory }}"
  
       # Copy parameters files for destination data factory
-      #- name: Copy Applicable Parameter File
-      #  run: cp "$factoryDirectory/$armParameterFile" $artifactName
+      - name: Copy Applicable Parameter File
+        run: cp "$factoryDirectory/$armParameterFile" ${{ steps.getSecrets1.outputs.artifactName }}
+        env:
+          factoryDirectory: "${{ steps.getSecrets1.outputs.factoryDirectory }}"
       # List artifact files
       - name: List Artifact Files
         run: ls ${{ steps.getSecrets1.outputs.artifactName }}
