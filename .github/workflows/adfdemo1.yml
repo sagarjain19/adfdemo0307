@@ -1,4 +1,4 @@
-name: AzCiCd_Workflow_demo
+name: Dev_Workflow
 on: 
   push:
     branches:
