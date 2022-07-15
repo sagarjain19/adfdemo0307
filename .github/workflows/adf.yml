@@ -14,4 +14,5 @@ jobs:
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}  
     - name: 'Run Azure CLI commands'
       run: |
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           az account show
