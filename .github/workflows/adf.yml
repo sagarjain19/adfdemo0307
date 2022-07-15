@@ -3,18 +3,17 @@ on:
   push:
     branches:
       - uat
-    
+  
   workflow_dispatch:
-      
+    
 jobs: 
   build-and-deploy:
     environment: uat
     runs-on: ubuntu-latest
     steps:
+    - uses: elstudio/action-install-azure-cli@v1
     - name: 'Az CLI login'
-      uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
         inlinescript: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}  
     - name: 'Run Azure CLI commands'
