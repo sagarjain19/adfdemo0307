@@ -1,0 +1,23 @@
+on: 
+  push:
+    branches:
+      - uat
+
+name: AzureARMSample
+
+jobs:
+
+  build-and-deploy:
+    environment: uat # !! Change depending on target environment
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ env.AZURE_CREDENTIALS_NEW }} 
+        enable-AzPSSession: true
+      env:
+        AZURE_CREDENTIALS_NEW:'{"clientId": "efc89a27-2a48-45b9-b0f4-3f07efcb556d","clientSecret":"KV38Q~kQ6xB4l47miHQu~kFZxcTU7FEaiaTFsbZi","subscriptionId":"24e4b4be-7875-429e-9548-fdc3241c1683","tenantId": "eab91f23-3244-40aa-8e73-a1e0e1e22949"}'
+    - name: Checkout
+      uses: actions/checkout@v1
