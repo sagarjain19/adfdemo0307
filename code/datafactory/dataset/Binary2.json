@@ -3,7 +3,18 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "destination_lk",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"destination_url": {
+					"value": "@dataset().destination_url_dataset",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"destination_url_dataset": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "Binary",
