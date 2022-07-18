@@ -20,7 +20,10 @@
 		"type": "Binary",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobFSLocation",
+				"fileName": "empdata.csv",
+				"folderPath": "input",
+				"fileSystem": "raw"
 			}
 		}
 	}
