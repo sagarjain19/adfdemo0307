@@ -88,7 +88,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"destination_url_dataset": {
-								"value": "@activity('Web1').output",
+								"value": "@activity('Web1').output.value",
 								"type": "Expression"
 							}
 						}
