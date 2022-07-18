@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"source_url1": {
+			"source_url_dataset": {
 				"type": "string"
 			}
 		},
