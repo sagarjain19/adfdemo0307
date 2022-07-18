@@ -36,7 +36,13 @@
 				"inputs": [
 					{
 						"referenceName": "Binary1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"source_url1": {
+								"value": "@pipeline().parameters.source_url1",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
