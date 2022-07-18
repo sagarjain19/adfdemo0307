@@ -58,11 +58,6 @@
 				"type": "string"
 			}
 		},
-		"variables": {
-			"source_url_variable": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
