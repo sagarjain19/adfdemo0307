@@ -67,6 +67,11 @@
 				"defaultValue": "12334"
 			}
 		},
+		"variables": {
+			"new_url_var": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
