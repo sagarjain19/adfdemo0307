@@ -5,6 +5,11 @@
 			"referenceName": "source_lk",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"source_url1": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Binary",
 		"typeProperties": {
