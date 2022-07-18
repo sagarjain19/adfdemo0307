@@ -38,7 +38,7 @@
 						"referenceName": "Binary1",
 						"type": "DatasetReference",
 						"parameters": {
-							"source_url1": {
+							"source_url_dataset": {
 								"value": "@pipeline().parameters.source_url1",
 								"type": "Expression"
 							}
