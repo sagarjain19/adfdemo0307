@@ -63,7 +63,8 @@
 		],
 		"parameters": {
 			"storage_url": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "12334"
 			}
 		},
 		"annotations": []
