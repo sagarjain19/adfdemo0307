@@ -30,11 +30,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"source_url1": {
-				"type": "string"
-			}
-		},
 		"annotations": []
 	}
 }
