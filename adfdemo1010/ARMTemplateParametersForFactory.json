@@ -4,12 +4,6 @@
 	"parameters": {
 		"factoryName": {
 			"value": "adfdemo1010"
-		},
-		"AzureDataLakeStorage1_accountKey": {
-			"value": ""
-		},
-		"AzureDataLakeStorage1_properties_typeProperties_url": {
-			"value": "https://azstorage108.dfs.core.windows.net/"
 		}
 	}
 }
