@@ -3,7 +3,13 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "source_lk",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"source_url": {
+					"value": "@dataset().source_url_dataset",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"source_url_dataset": {
